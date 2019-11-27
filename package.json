@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "Blocklang 客户端代码生成工具",
   "scripts": {
-    "precommit": "lint-staged",
     "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx}\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,15 +21,16 @@
   },
   "homepage": "https://github.com/blocklang/codemods#readme",
   "bin": "dist/bin/codemods.js",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "*.{ts,tsx}": [
       "prettier --write",
       "git add"
     ]
-  },
-  "devDependencies": {
-    "husky": "^3.1.0",
-    "lint-staged": "^9.5.0"
   },
   "prettier": {
     "singleQuote": true,
@@ -39,6 +39,11 @@
     "parser": "typescript",
     "printWidth": 120,
     "arrowParens": "always"
+  },
+  "devDependencies": {
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0",
+    "prettier": "1.19.1"
   },
   "dependencies": {
     "@types/yargs": "^13.0.3",
