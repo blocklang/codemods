@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "description": "Blocklang 客户端代码生成工具",
   "scripts": {
-    "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx}\""
+    "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx}\"",
+    "build:tsc": "tsc",
+    "build:templates": "shx cp -r src/templates dist/src/",
+    "build": "npm run build:tsc && npm run build:templates"
   },
   "repository": {
     "type": "git",
@@ -23,9 +26,10 @@
   "devDependencies": {
     "@types/node": "10.17.1",
     "husky": "^3.1.0",
+    "intern": "^4.6.0",
     "lint-staged": "^9.5.0",
-    "typescript": "^3.7.2",
-    "intern": "^4.6.0"
+    "shx": "^0.3.2",
+    "typescript": "^3.7.2"
   },
   "dependencies": {
     "@dojo/framework": "^6.0.3",
