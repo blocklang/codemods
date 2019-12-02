@@ -1,5 +1,6 @@
 export interface ProjectInfo {
 	name: string;
+	label: string;
 	version: string;
 }
 
@@ -11,4 +12,13 @@ export interface PackageJson {
 export interface Depencency {
 	name: string;
 	version: string;
+}
+
+export interface PageInfo {
+	id: number;
+	key: string;
+}
+
+export interface PageModel {
+	pageInfo: PageInfo;
 }

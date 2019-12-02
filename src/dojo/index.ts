@@ -1,13 +1,27 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
-import { Project, ts, CallExpression, ParameterDeclaration, FunctionDeclaration } from 'ts-morph';
+import {
+	Project,
+	ts,
+	CallExpression,
+	ParameterDeclaration,
+	FunctionDeclaration,
+	ArrayLiteralExpression,
+	ObjectLiteralExpression
+} from 'ts-morph';
 import * as pkgDir from 'pkg-dir';
 import { join, resolve } from 'path';
-import { ProjectInfo, PackageJson, Depencency } from './interfaces';
+import { ProjectInfo, PackageJson, Depencency, PageModel } from '../interfaces';
 import * as spawn from 'cross-spawn';
 
-const project = new Project({});
+import * as packageJson from './packageJson';
+import * as indexHtml from './indexHtml';
+import * as routesTs from './routesTs';
+
+const project = new Project({
+	tsConfigFilePath: path.join(process.cwd(), 'tsconfig.json')
+});
 
 export function generate(modelDir: string) {
 	console.log(modelDir);
@@ -17,27 +31,15 @@ export function generate(modelDir: string) {
 	const projectInfo = JSON.parse(content) as ProjectInfo;
 	console.log(projectInfo.name, projectInfo.version);
 
-	// 调整 package.json 中的 name 和 version
-	try {
-		const packageJsonFilePath = join(process.cwd(), 'package.json');
-		const packageJson = JSON.parse(fs.readFileSync(packageJsonFilePath, 'utf8')) as PackageJson;
-		packageJson.name = projectInfo.name;
-		packageJson.version = projectInfo.version;
-		fs.writeFileSync(packageJsonFilePath, JSON.stringify(packageJson, null, 2));
-	} catch (error) {
-		throw Error('没有找到 package.json 文件，停止编译。');
-	}
-
-	// 使用 yarn 安装初始依赖
-	console.log('安装初始依赖');
-	const proc = spawn.sync('yarn', { stdio: 'inherit' });
-
-	// 添加依赖
 	const dependenceContent = fs.readFileSync(path.resolve(modelDir, 'dependences.json'), 'utf8');
 	const dependences = JSON.parse(dependenceContent) as Depencency[];
-	const pkgDeps = dependences.map(({ name, version }) => `${name}@${version}`);
-	console.log('pkgDeps', pkgDeps);
-	spawn.sync('yarn', ['add', ...pkgDeps], { stdio: 'inherit' });
+
+	const pages = glob.sync(path.resolve(modelDir, 'pages/*.json'));
+	console.log(pages);
+
+	packageJson.update(projectInfo, dependences);
+	indexHtml.update(projectInfo.label || projectInfo.name);
+	routesTs.update(project, pages);
 
 	console.log('write success');
 
@@ -98,5 +100,5 @@ export function generate(modelDir: string) {
 
 	// // project.getSourceFile(pageFileName).getFunction("Page").rename("Page1");
 
-	// project.saveSync();
+	project.saveSync();
 }
