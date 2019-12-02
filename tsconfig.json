@@ -20,5 +20,8 @@
   "include": [
     "./src/**/*.ts",
     "./tests/**/*.ts"
+  ],
+  "exclude": [
+    "./src/templates"
   ]
 }
