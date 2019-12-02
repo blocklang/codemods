@@ -18,6 +18,7 @@ import * as spawn from 'cross-spawn';
 import * as packageJson from './packageJson';
 import * as indexHtml from './indexHtml';
 import * as routesTs from './routesTs';
+import * as pageTs from './pageTs';
 
 const project = new Project({
 	tsConfigFilePath: path.join(process.cwd(), 'tsconfig.json')
@@ -34,29 +35,19 @@ export function generate(modelDir: string) {
 	const dependenceContent = fs.readFileSync(path.resolve(modelDir, 'dependences.json'), 'utf8');
 	const dependences = JSON.parse(dependenceContent) as Depencency[];
 
-	const pages = glob.sync(path.resolve(modelDir, 'pages/*.json'));
-	console.log(pages);
+	const pageModels = glob
+		.sync(path.resolve(modelDir, 'pages/*.json'))
+		.map((pagePath) => JSON.parse(fs.readFileSync(pagePath, 'utf8')));
 
-	packageJson.update(projectInfo, dependences);
-	indexHtml.update(projectInfo.label || projectInfo.name);
-	routesTs.update(project, pages);
+	// packageJson.update(projectInfo, dependences);
+	// indexHtml.update(projectInfo.label || projectInfo.name);
+	// routesTs.update(project, pageModels);
+	pageTs.create(project, pageModels);
+
+	// 先添加页面
+	// 然后在 App.ts 中添加 Outlet 部件。
 
 	console.log('write success');
-
-	// const path = resolve(process.cwd(), 'package.json');
-	// console.log(path);
-
-	// // 读取 page 源码模板
-	// const pageTemplatePath = path.join(".");
-	// console.log(pageTemplatePath);
-	// const content = fs.readFileSync(path.join("_workspace","template", "Page.ts"), "utf8");
-	// // 修改文件名
-	// // 属性属性名
-	// // 修改类名
-
-	// project.getRootDirectories().forEach(item => {
-	//     console.log(item.getPath())
-	// })
 
 	// console.log(project.getRootDirectories());
 
@@ -67,13 +58,6 @@ export function generate(modelDir: string) {
 	// // const fileSystem = project.getFileSystem();
 	// const pageFileName = "./_workspace/project1/Page1.ts";
 	// const sourceFile = project.createSourceFile(pageFileName, content);
-
-	// // sourceFile.getInterface("PageProperties").rename("Page1Properties");
-
-	// sourceFile.saveSync();
-
-	// const interface1 = project.getSourceFile(pageFileName).getInterface("PageProperties");
-	// interface1.rename("Page1Properties");
 
 	// const exportAssignments = project.getSourceFile(pageFileName).getExportAssignments();
 	// const defaultExportAssignment = project.getSourceFile(pageFileName).getExportAssignment(d=> d.isExportEquals()===false);
