@@ -1,13 +1,13 @@
 import { getWidgetImports } from '../../../src/dojo/pageImports';
-import { assertReturnStatement } from 'babel-types';
+import { Dependency, AttachedWidget } from '../../../src/interfaces';
 
 const { describe, it } = intern.getPlugin('interface.bdd');
 const { assert } = intern.getPlugin('chai');
 
 describe('dojo/pageImports', () => {
 	it('getWidgetImports: no widgets', () => {
-		const dependencies = [];
-		const widgets = [];
+		const dependencies: Dependency[] = [];
+		const widgets: AttachedWidget[] = [];
 		const imports = getWidgetImports(dependencies, widgets);
 		assert.isEmpty(imports);
 	});

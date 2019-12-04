@@ -22,13 +22,23 @@ export function getWidgetImports(
 	// 一个部件在页面中会使用多次，这里进行去重处理
 	const uniqWidgets = uniqWith(widgets, (c1, c2) => c1.apiRepoId === c2.apiRepoId && c1.widgetName === c2.widgetName);
 
-	return uniqWidgets.map((item) => {
-		const dep = buildDependences.find((buildDep) => buildDep.apiRepoId === item.apiRepoId);
-		const packageName = dep.name;
-		const widgetPath = kebabCase(item.widgetName);
+	return uniqWidgets
+		.filter((item) => {
+			// 先进行校验
+			const dep = buildDependences.find((buildDep) => buildDep.apiRepoId === item.apiRepoId);
+			if (!dep) {
+				console.log(`没有找到 ${item.widgetName} 部件对应的 build 版依赖`);
+				return false;
+			}
+			return true;
+		})
+		.map((item) => {
+			const dep = buildDependences.find((buildDep) => buildDep.apiRepoId === item.apiRepoId);
+			const packageName = dep!.name; // 因为前面已做过校验，所以此处的 dep 肯定有值。
+			const widgetPath = kebabCase(item.widgetName);
 
-		const defaultImport = upperFirst(item.widgetName);
-		const moduleSpecifier = `${packageName}/${widgetPath}`;
-		return { defaultImport, moduleSpecifier };
-	});
+			const defaultImport = upperFirst(item.widgetName);
+			const moduleSpecifier = `${packageName}/${widgetPath}`;
+			return { defaultImport, moduleSpecifier };
+		});
 }

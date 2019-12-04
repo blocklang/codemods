@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import { join } from 'path';
 import * as spawn from 'cross-spawn';
 import { ProjectInfo, Dependency, PackageJson } from '../interfaces';
@@ -24,15 +23,26 @@ export function update(projectInfo: ProjectInfo, dependencies: Dependency[] = []
 		packageJson.version = projectInfo.version;
 		fs.writeFileSync(packageJsonFilePath, JSON.stringify(packageJson, null, 2));
 	} catch (error) {
-		throw Error('没有找到 package.json 文件，停止编译。');
+		console.error('没有找到 package.json 文件，停止编译。');
+		return;
 	}
 
 	// 使用 yarn 安装初始依赖
 	console.log('安装初始依赖');
-	const proc = spawn.sync('yarn', { stdio: 'inherit' });
+	let { status: yarnAddStatus } = spawn.sync('yarn', { stdio: 'inherit' });
+	if (yarnAddStatus && yarnAddStatus !== 0) {
+		console.error('初始依赖安装失败');
+		process.exit(yarnAddStatus);
+		return;
+	}
 
 	// 安装用户配置的依赖
 	const pkgDeps = dependencies.map(({ name, version }) => `${name}@${version}`);
 	console.log('pkgDeps', pkgDeps);
-	spawn.sync('yarn', ['add', ...pkgDeps], { stdio: 'inherit' });
+	const { status: yarnAddCustomStatus } = spawn.sync('yarn', ['add', ...pkgDeps], { stdio: 'inherit' });
+	if (yarnAddCustomStatus && yarnAddCustomStatus !== 0) {
+		console.error('用户配置的依赖安装失败');
+		process.exit(yarnAddCustomStatus);
+		return;
+	}
 }

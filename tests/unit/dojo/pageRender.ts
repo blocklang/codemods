@@ -13,12 +13,12 @@ describe('dojo/pageRender', () => {
 	});
 
 	it('renderPage: no widgets', () => {
-		const widgets = [];
+		const widgets: AttachedWidget[] = [];
 		renderPage(writer, widgets);
 		assert.equal(writer.toString(), '');
 	});
 
-	it('renderPage: has a root widget', () => {
+	it('renderPage: has a root widget and property has no value', () => {
 		const widgets: AttachedWidget[] = [
 			{
 				id: '1',
@@ -31,7 +31,30 @@ describe('dojo/pageRender', () => {
 						id: '1',
 						name: 'propA',
 						valueType: 'string',
-						value: 'a',
+						isExpr: false
+					}
+				]
+			}
+		];
+		renderPage(writer, widgets);
+		const code = `w(WidgetA, {key: "1"}, [])`;
+		assert.equal(writer.toString(), code);
+	});
+
+	it('renderPage: has a root widget and property has default value', () => {
+		const widgets: AttachedWidget[] = [
+			{
+				id: '1',
+				parentId: '-1',
+				apiRepoId: 1,
+				widgetName: 'WidgetA',
+				canHasChildren: true,
+				properties: [
+					{
+						id: '1',
+						name: 'propA',
+						valueType: 'string',
+						defaultValue: 'a',
 						isExpr: false
 					}
 				]
@@ -39,6 +62,31 @@ describe('dojo/pageRender', () => {
 		];
 		renderPage(writer, widgets);
 		const code = `w(WidgetA, {key: "1", propA: "a"}, [])`;
+		assert.equal(writer.toString(), code);
+	});
+
+	it('renderPage: has a root widget and property has value', () => {
+		const widgets: AttachedWidget[] = [
+			{
+				id: '1',
+				parentId: '-1',
+				apiRepoId: 1,
+				widgetName: 'WidgetA',
+				canHasChildren: true,
+				properties: [
+					{
+						id: '1',
+						name: 'propA',
+						valueType: 'string',
+						defaultValue: 'a',
+						value: 'b',
+						isExpr: false
+					}
+				]
+			}
+		];
+		renderPage(writer, widgets);
+		const code = `w(WidgetA, {key: "1", propA: "b"}, [])`;
 		assert.equal(writer.toString(), code);
 	});
 

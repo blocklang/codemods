@@ -24,14 +24,17 @@ function renderWidget(writer: CodeBlockWriter, widget: AttachedWidget, index: nu
 		.quote()
 		.write(widget.id)
 		.quote();
-	widget.properties.forEach((prop, index) => {
-		writer.write(', ');
-		writer.write(prop.name).write(': ');
-		if (prop.valueType === 'string') {
-			writer
-				.quote()
-				.write(prop.value)
-				.quote();
+	widget.properties.forEach((prop) => {
+		const value = prop.value || prop.defaultValue;
+		if (value) {
+			writer.write(', ');
+			writer.write(prop.name).write(': ');
+			if (prop.valueType === 'string') {
+				writer
+					.quote()
+					.write(value)
+					.quote();
+			}
 		}
 	});
 	writer.write('}');

@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
     "declaration": false,
+    "downlevelIteration": true,
+		"experimentalDecorators": true,
+		"importHelpers": true,
+    "inlineSources": true,
     "outDir": "dist/",
     "module": "commonjs",
     "lib": [
@@ -14,8 +18,19 @@
 			"es2015.symbol",
 			"es2015.symbol.wellknown"
     ],
-    "types": ["intern"],
-    "target": "es2015"
+    "plugins": [
+			{
+				"name": "tslint-language-service",
+				"alwaysShowRuleFailuresAsWarnings": true
+			}
+		],
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "removeComments": false,
+    "target": "es2015",
+    "sourceMap": true,
+    "strict": true,
+    "types": ["intern"]
   },
   "include": [
     "./src/**/*.ts",
