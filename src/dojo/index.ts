@@ -12,7 +12,7 @@ import {
 } from 'ts-morph';
 import * as pkgDir from 'pkg-dir';
 import { join, resolve } from 'path';
-import { ProjectInfo, PackageJson, Depencency, PageModel } from '../interfaces';
+import { ProjectInfo, PackageJson, Dependency, PageModel } from '../interfaces';
 import * as spawn from 'cross-spawn';
 
 import * as packageJson from './packageJson';
@@ -33,7 +33,7 @@ export function generate(modelDir: string) {
 	console.log(projectInfo.name, projectInfo.version);
 
 	const dependenceContent = fs.readFileSync(path.resolve(modelDir, 'dependences.json'), 'utf8');
-	const dependences = JSON.parse(dependenceContent) as Depencency[];
+	const dependences = JSON.parse(dependenceContent) as Dependency[];
 
 	const pageModels = glob
 		.sync(path.resolve(modelDir, 'pages/*.json'))
@@ -42,7 +42,7 @@ export function generate(modelDir: string) {
 	// packageJson.update(projectInfo, dependences);
 	// indexHtml.update(projectInfo.label || projectInfo.name);
 	// routesTs.update(project, pageModels);
-	pageTs.create(project, pageModels);
+	pageTs.create(project, dependences, pageModels);
 
 	// 先添加页面
 	// 然后在 App.ts 中添加 Outlet 部件。

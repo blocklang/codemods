@@ -10,10 +10,6 @@ export function runSync(command: string, args: string[] = []) {
 	}
 }
 
-export function capitalize(value: string) {
-	return `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
-}
-
 /**
  * @function getChildrenIndex
  *

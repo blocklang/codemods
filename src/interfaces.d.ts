@@ -9,10 +9,13 @@ export interface PackageJson {
 	version: string;
 }
 
-export interface Depencency {
+export interface Dependency {
 	name: string;
 	version: string;
+	apiRepoId: number;
 }
+
+// 注意：Dependency 和 ComponentRepo 功能有些重叠，待进一步明确。
 
 export interface PageInfo {
 	id: number;
@@ -22,6 +25,7 @@ export interface PageInfo {
 export interface AttachedWidget {
 	id: string;
 	parentId: string;
+	apiRepoId: number;
 	widgetName: string;
 	canHasChildren: boolean;
 	properties: AttachedWidgetProperty[];

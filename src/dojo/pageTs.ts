@@ -1,16 +1,17 @@
 import { Project, CallExpression, ParameterDeclaration, FunctionDeclaration, CodeBlockWriter } from 'ts-morph';
 import * as path from 'path';
 import * as fs from 'fs';
-import { PageModel, AttachedWidgetProperty, AttachedWidget } from '../interfaces';
-import { capitalize } from '../util';
+import { PageModel, AttachedWidgetProperty, AttachedWidget, Dependency } from '../interfaces';
+import * as lodash from 'lodash';
 import { renderPage } from './pageRender';
+import { getWidgetImports } from './pageImports';
 
-export function create(project: Project, pageModels: PageModel[]): void {
+export function create(project: Project, dependences: Dependency[], pageModels: PageModel[]): void {
 	const pageTemplate = readPageTemplate(project);
 
 	// 放在 src/pages/{pageKey}/ 文件夹中
 	pageModels.forEach((model) => {
-		createPage(project, pageTemplate, model);
+		createPage(project, dependences, pageTemplate, model);
 	});
 }
 
@@ -25,13 +26,13 @@ function readPageTemplate(project: Project): string {
 	return fs.readFileSync(pageTemplatePath, 'utf8');
 }
 
-function createPage(project: Project, pageTemplate: string, pageModel: PageModel): void {
+function createPage(project: Project, dependences: Dependency[], pageTemplate: string, pageModel: PageModel): void {
 	// 修改文件名
 	const pageFileName = path.join(process.cwd(), 'src', 'pages', pageModel.pageInfo.key, `index.ts`);
 	const sourceFile = project.createSourceFile(pageFileName, pageTemplate);
 
 	// 修改属性名
-	const prefix = capitalize(pageModel.pageInfo.key);
+	const prefix = lodash.upperFirst(pageModel.pageInfo.key);
 	sourceFile.getInterface('PageProperties').rename(`${prefix}Properties`);
 
 	// 修改类名
@@ -44,17 +45,18 @@ function createPage(project: Project, pageTemplate: string, pageModel: PageModel
 	const parameterDeclaration = firstParam as ParameterDeclaration;
 	parameterDeclaration.rename(prefix);
 	// 4. 添加 import 语句
-	// TODO:
+	sourceFile.addImportDeclarations(getWidgetImports(dependences, pageModel.widgets));
 	// 5. 设置函数体
 	const functionDeclaration = firstParam as FunctionDeclaration;
 	functionDeclaration.setBodyText((writer) => {
 		writer.writeLine('const { } = properties();');
 
 		writer.write('return ');
-		writer.write("v('div', {}, [");
+		writer.write("v('div', {}, [").newLine();
 
 		renderPage(writer, pageModel.widgets);
 
-		writer.write(']);');
+		writer.newLine().write(']);');
 	});
+	sourceFile.formatText();
 }

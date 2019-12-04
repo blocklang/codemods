@@ -1,4 +1,4 @@
-import { v, create } from '@dojo/framework/core/vdom';
+import { v, w, create } from '@dojo/framework/core/vdom';
 
 export interface PageProperties {}
 

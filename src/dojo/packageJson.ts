@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { join } from 'path';
 import * as spawn from 'cross-spawn';
-import { ProjectInfo, Depencency, PackageJson } from '../interfaces';
+import { ProjectInfo, Dependency, PackageJson } from '../interfaces';
 
 /**
  * 更新 package.json 中的内容并安装依赖
@@ -15,7 +15,7 @@ import { ProjectInfo, Depencency, PackageJson } from '../interfaces';
  * @param projectInfo 项目基本信息
  * @param dependences 项目依赖列表
  */
-export function update(projectInfo: ProjectInfo, dependences: Depencency[] = []): void {
+export function update(projectInfo: ProjectInfo, dependencies: Dependency[] = []): void {
 	// 调整 package.json 中的 name 和 version
 	try {
 		const packageJsonFilePath = join(process.cwd(), 'package.json');
@@ -32,7 +32,7 @@ export function update(projectInfo: ProjectInfo, dependences: Depencency[] = [])
 	const proc = spawn.sync('yarn', { stdio: 'inherit' });
 
 	// 安装用户配置的依赖
-	const pkgDeps = dependences.map(({ name, version }) => `${name}@${version}`);
+	const pkgDeps = dependencies.map(({ name, version }) => `${name}@${version}`);
 	console.log('pkgDeps', pkgDeps);
 	spawn.sync('yarn', ['add', ...pkgDeps], { stdio: 'inherit' });
 }

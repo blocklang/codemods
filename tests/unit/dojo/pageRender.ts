@@ -23,6 +23,7 @@ describe('dojo/pageRender', () => {
 			{
 				id: '1',
 				parentId: '-1',
+				apiRepoId: 1,
 				widgetName: 'WidgetA',
 				canHasChildren: true,
 				properties: [
@@ -46,6 +47,7 @@ describe('dojo/pageRender', () => {
 			{
 				id: '1',
 				parentId: '-1',
+				apiRepoId: 1,
 				widgetName: 'WidgetA',
 				canHasChildren: true,
 				properties: []
@@ -53,6 +55,7 @@ describe('dojo/pageRender', () => {
 			{
 				id: '2',
 				parentId: '1',
+				apiRepoId: 1,
 				widgetName: 'WidgetB',
 				canHasChildren: false,
 				properties: []
