@@ -1,9 +1,7 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import * as glob from 'glob';
 import { Project } from 'ts-morph';
-import { ProjectInfo, Dependency } from '../interfaces';
 
+import * as modelReader from './modelReader';
 import * as packageJson from './packageJson';
 import * as indexHtml from './indexHtml';
 import * as routesTs from './routesTs';
@@ -13,20 +11,20 @@ const project = new Project({
 	tsConfigFilePath: path.join(process.cwd(), 'tsconfig.json')
 });
 
-export function generate(modelDir: string = '') {
-	console.log(modelDir);
+export function generate(modelDir: string = ''): void {
+	const projectInfo = modelReader.readProjectJson(modelDir);
+	if(!projectInfo){
+		process.exit(1);
+		return;
+	}
 
-	const content = fs.readFileSync(path.resolve(modelDir, 'project.json'), 'utf8');
-	console.log(content);
-	const projectInfo = JSON.parse(content) as ProjectInfo;
-	console.log(projectInfo.name, projectInfo.version);
+	const dependences = modelReader.readDependencesJson(modelDir);
+	if(!dependences){
+		process.exit(1);
+		return;
+	}
 
-	const dependenceContent = fs.readFileSync(path.resolve(modelDir, 'dependences.json'), 'utf8');
-	const dependences = JSON.parse(dependenceContent) as Dependency[];
-
-	const pageModels = glob
-		.sync(path.resolve(modelDir, 'pages/*.json'))
-		.map((pagePath) => JSON.parse(fs.readFileSync(pagePath, 'utf8')));
+	const pageModels = modelReader.readAllPageModels(modelDir);
 
 	packageJson.update(projectInfo, dependences);
 	indexHtml.update(projectInfo.label || projectInfo.name);
@@ -34,5 +32,6 @@ export function generate(modelDir: string = '') {
 	pageTs.create(project, dependences, pageModels);
 
 	project.saveSync();
+
 	console.log('成功生成 Dojo App 代码');
 }
