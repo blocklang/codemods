@@ -34,15 +34,17 @@
   "dependencies": {
     "@dojo/framework": "^6.0.3",
     "@types/cross-spawn": "^6.0.1",
-    "@types/yargs": "^13.0.3",
     "@types/jsdom": "^12.2.4",
     "@types/prettier": "^1.19.0",
+    "@types/yargs": "^13.0.3",
+    "@types/lodash": "^4.14.149",
     "cross-spawn": "^7.0.1",
     "jsdom": "^15.2.1",
+    "lodash": "^4.17.15",
     "pkg-dir": "^4.2.0",
+    "prettier": "^1.19.1",
     "ts-morph": "^5.0.0",
-    "yargs": "^15.0.2",
-    "prettier": "^1.19.1"
+    "yargs": "^15.0.2"
   },
   "husky": {
     "hooks": {
