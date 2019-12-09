@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
 import { ProjectInfo, Dependency, PageModel } from '../interfaces';
+import { ENCODING_UTF8 } from '../util';
 
-const ENCODING_UTF8 = 'utf8';
 const PROJECT_INFO = 'project.json';
 const DEPENDENCES_INFO = 'dependences.json';
 
@@ -54,6 +54,11 @@ export function readDependencesJson(modelDir: string): Dependency[] | undefined 
  */
 export function readAllPageModels(modelDir: string): PageModel[] {
     return glob
-        .sync(path.resolve(modelDir, 'pages/*.json'))
-        .map((pagePath) => JSON.parse(fs.readFileSync(pagePath, ENCODING_UTF8)));
+        .sync(path.resolve(modelDir, 'pages/**/*.json'))
+        .map((pagePath) => { 
+            const model: PageModel = JSON.parse(fs.readFileSync(pagePath, ENCODING_UTF8));
+            // 根据存储页面模型文件的路径生成 groupPath
+            model.pageInfo.groupPath = path.dirname(path.relative(path.resolve(modelDir, 'pages'), pagePath));
+            return model;
+        });
 }

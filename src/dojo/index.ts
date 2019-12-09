@@ -6,6 +6,7 @@ import * as packageJson from './packageJson';
 import * as indexHtml from './indexHtml';
 import * as routesTs from './routesTs';
 import * as pageTs from './pageTs';
+import * as appTs from './appTs';
 
 const project = new Project({
 	tsConfigFilePath: path.join(process.cwd(), 'tsconfig.json')
@@ -25,13 +26,32 @@ export function generate(modelDir: string = ''): void {
 	}
 
 	const pageModels = modelReader.readAllPageModels(modelDir);
+	console.log(`共有 ${pageModels.length} 个页面。`);
 
-	packageJson.update(projectInfo, dependences);
-	indexHtml.update(projectInfo.label || projectInfo.name);
-	routesTs.update(project, pageModels);
-	pageTs.create(project, dependences, pageModels);
+	if(!packageJson.update(projectInfo, dependences)) {
+		process.exit(1);
+		return;
+	}
+
+	if(indexHtml.update(projectInfo.label || projectInfo.name)) {
+		process.exit(1);
+		return;
+	}
+
+	if(!routesTs.update(project, pageModels.map(model => model.pageInfo))) {
+		process.exit(1);
+		return;
+	}
+	if(!pageTs.create(project, dependences, pageModels)){
+		process.exit(1);
+		return;
+	}
+	if(!appTs.update(project, pageModels)) {
+		process.exit(1);
+		return;
+	}
 
 	project.saveSync();
 
-	console.log('成功生成 Dojo App 代码');
+	console.log('成功生成 Dojo App 代码!');
 }

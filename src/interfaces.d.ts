@@ -20,6 +20,7 @@ export interface Dependency {
 export interface PageInfo {
 	id: number;
 	key: string;
+	groupPath: string;
 }
 
 export interface AttachedWidget {
