@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/codemods.svg)](https://badge.fury.io/js/codemods)
 
-Blocklang 客户端代码生成工具。
+[Block Lang](https://blocklang.com) 客户端代码生成工具。
 
 ## 如何使用
 
@@ -26,7 +26,7 @@ codemods --library dojo --modelDir ./your/model/dir
 cd dist/src
 ```
 
-然后使用 `npm publish` 命令发布。
+然后使用 `npm login` 和 `npm publish` 命令发布。
 
 ## 运行测试
 
