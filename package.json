@@ -1,7 +1,7 @@
 {
   "name": "codemods",
-  "version": "0.0.1-alpha.1",
-  "description": "Blocklang 客户端代码生成工具",
+  "version": "0.0.1-alpha.2",
+  "description": "Block Lang 客户端代码生成工具",
   "scripts": {
     "prettier": "prettier --write \"{src,tests}/**/*.{ts,tsx}\"",
     "build:tsc": "tsc",
