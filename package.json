@@ -8,7 +8,7 @@
     "build:templates": "shx cp -r src/templates dist/src/",
     "clean": "shx rm -rf dist",
     "build": "npm run clean && npm run build:tsc && npm run build:templates && shx cp package.json dist/src/ && shx cp README.md dist/src/",
-    "uploadCoverage": "codecov --file=coverage/coverage.json",
+    "uploadCoverage": "codecov --file=coverage/coverage.json"
   },
   "repository": {
     "type": "git",
