@@ -1,5 +1,7 @@
 # codemods
 
+[![npm version](https://badge.fury.io/js/codemods.svg)](https://badge.fury.io/js/codemods)
+
 Blocklang 客户端代码生成工具。
 
 ## 如何使用
