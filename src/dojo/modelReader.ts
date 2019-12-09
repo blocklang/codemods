@@ -58,7 +58,9 @@ export function readAllPageModels(modelDir: string): PageModel[] {
         .map((pagePath) => { 
             const model: PageModel = JSON.parse(fs.readFileSync(pagePath, ENCODING_UTF8));
             // 根据存储页面模型文件的路径生成 groupPath
-            model.pageInfo.groupPath = path.dirname(path.relative(path.resolve(modelDir, 'pages'), pagePath));
+            // 如果放在根目录下，则 groupPath 的值不能为 "."，应该是 ""
+            const groupPath = path.dirname(path.relative(path.resolve(modelDir, 'pages'), pagePath));
+            model.pageInfo.groupPath = groupPath === '.'?'':groupPath;
             return model;
         });
 }

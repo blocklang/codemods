@@ -1,10 +1,77 @@
-import { getPageImports } from "../../../src/dojo/appTs";
+import { getPageImports, update } from "../../../src/dojo/appTs";
 import { PageInfo } from '../../../src/interfaces';
+import {stub} from 'sinon';
+import { InMemoryFileSystemHost } from '@ts-morph/common';
+import { Project } from 'ts-morph';
 
 const { describe, it } = intern.getPlugin('interface.bdd');
 const { assert } = intern.getPlugin('chai');
 
 describe('dojo/appTs', () => {
+
+    it('update: src/App.ts not found', () => {
+        const fileSystem = new InMemoryFileSystemHost();
+        fileSystem.writeFileSync("tsconfig.json", `{ "compilerOptions": { "target": "ES2015" } }`);
+        const project = new Project({tsConfigFilePath: "tsconfig.json", fileSystem});
+    
+        const cwdStub = stub(process, "cwd").returns("");
+        const consoleStub = stub(console, "error");
+
+        assert.isFalse(update(project, []));
+        assert.isTrue(consoleStub.calledOnceWith("在模板项目中没有找到 src/App.ts 文件"));
+
+        cwdStub.restore();
+        consoleStub.restore();
+    });
+
+    it('update: src/App.ts not contain default export', () => {
+        const cwdStub = stub(process, "cwd").returns("");
+        const consoleStub = stub(console, "error");
+
+        const fileSystem = new InMemoryFileSystemHost();
+        fileSystem.writeFileSync("tsconfig.json", `{ "compilerOptions": { "target": "ES2015" } }`);
+        fileSystem.writeFileSync("src/App.ts", "");
+        const project = new Project({tsConfigFilePath: "tsconfig.json", fileSystem});
+
+        assert.isFalse(update(project, []));
+        assert.isTrue(consoleStub.calledOnceWith("在 src/App.ts 文件中没有找到默认的导出语句。"));
+
+        cwdStub.restore();
+        consoleStub.restore();
+    });
+
+    it('update: src/App.ts no argument in default export call', () => {
+        const cwdStub = stub(process, "cwd").returns("");
+        const consoleStub = stub(console, "error");
+
+        const fileSystem = new InMemoryFileSystemHost();
+        fileSystem.writeFileSync("tsconfig.json", `{ "compilerOptions": { "target": "ES2015" } }`);
+        fileSystem.writeFileSync("src/App.ts", "export default factory();");
+        const project = new Project({tsConfigFilePath: "tsconfig.json", fileSystem});
+
+        assert.isFalse(update(project, []));
+        assert.isTrue(consoleStub.calledOnceWith("在 src/App.ts 的 factory 函数中有且只能有一个参数，但现在有 0 个参数。"));
+
+        cwdStub.restore();
+        consoleStub.restore();
+    });
+
+    it('update: src/App.ts no function body in default export call', () => {
+        const cwdStub = stub(process, "cwd").returns("");
+        const consoleStub = stub(console, "error");
+
+        const fileSystem = new InMemoryFileSystemHost();
+        fileSystem.writeFileSync("tsconfig.json", `{ "compilerOptions": { "target": "ES2015" } }`);
+        fileSystem.writeFileSync("src/App.ts", "export default factory('a');");
+        const project = new Project({tsConfigFilePath: "tsconfig.json", fileSystem});
+
+        assert.isFalse(update(project, []));
+        assert.isTrue(consoleStub.calledOnceWith("should be 'export default factory(function App(){});'"));
+
+        cwdStub.restore();
+        consoleStub.restore();
+    });
+
 	it('getPageImports: no pages', () => {
         const pageInfos: PageInfo[] = [];
 		assert.isEmpty(getPageImports(pageInfos));

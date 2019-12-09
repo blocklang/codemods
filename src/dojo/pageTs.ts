@@ -57,9 +57,9 @@ function createPage(project: Project, dependences: Dependency[], pageTemplate: s
 
 	let sourceFile: SourceFile;
 	try {
-		sourceFile = project.createSourceFile(pageFileName, pageTemplate);
+		sourceFile = project.createSourceFile(path.join(process.cwd(), pageFileName), pageTemplate);
 	} catch (error) {
-		console.error(`创建源文件 ${pageFileName} 失败！`);
+		console.error(`创建源文件 ${pageFileName} 失败，文件已存在！`);
 		return false;
 	}
 
@@ -109,6 +109,8 @@ function createPage(project: Project, dependences: Dependency[], pageTemplate: s
 	});
 
 	sourceFile.formatText();
+
+	console.log("完成。");
 	return true;
 }
 

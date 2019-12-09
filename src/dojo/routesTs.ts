@@ -1,6 +1,7 @@
-import { PageInfo} from '../interfaces';
+import { PageInfo } from '../interfaces';
 import { ArrayLiteralExpression, Project } from 'ts-morph';
 import { join } from 'path';
+import { getPageGroupPathes } from './pageUtil';
 
 /**
  * 往 `src/routes.ts` 文件中追加 route config
@@ -10,22 +11,24 @@ import { join } from 'path';
  */
 export function update(project: Project, pageInfos: PageInfo[] = []): boolean {
 	const routesTsFileName = 'src/routes.ts';
-	const routesTsPath = join(process.cwd(), routesTsFileName);
-	const routesTsSourceFile = project.getSourceFile(routesTsPath);
+	console.log(`开始更新 ${routesTsFileName} 文件`);
+
+	const routesTsSourceFile = project.getSourceFile(join(process.cwd(), routesTsFileName));
 	if (!routesTsSourceFile) {
 		console.error(`在模板项目中没有找到 ${routesTsFileName} 文件`);
 		return false;
 	}
-
 	const routesTsDefaultExport = routesTsSourceFile.getExportAssignment((d) => d.isExportEquals() === false);
 	if (!routesTsDefaultExport) {
-		console.warn(`在 ${routesTsFileName} 文件中缺失默认的导出语句。`);
+		console.error(`在 ${routesTsFileName} 文件中缺失默认的导出语句。`);
 		return false;
 	}
+
 	const arrayLiteralExpression = routesTsDefaultExport.getExpression() as ArrayLiteralExpression;
 	pageInfos.forEach((pageInfo: PageInfo) => updatePage(arrayLiteralExpression, pageInfo));
 
 	routesTsSourceFile.formatText();
+	console.log("更新完成。");
 	return true;
 }
 
@@ -51,7 +54,7 @@ function updatePage(arrayLiteralExpression: ArrayLiteralExpression, pageInfo: Pa
 				.quote()
 				.write(outlet)
 				.quote();
-			
+
 			if (isMainPage(pageInfo)) {
 				writer
 					.write(',')
@@ -62,23 +65,27 @@ function updatePage(arrayLiteralExpression: ArrayLiteralExpression, pageInfo: Pa
 	});
 }
 
-function getRouteOutlet(pageInfo: PageInfo) {
-	return pageInfo.groupPath === '' ? `${pageInfo.key}` : `${pageInfo.groupPath}-${pageInfo.key}`;
+/**
+ * route outlet 的格式为 {groupPath1}-{groupPath2}-{key}
+ * 
+ */
+export function getRouteOutlet({ groupPath = "", key = "" }: { groupPath: string, key: string }) {
+	const groupPathes = getPageGroupPathes(groupPath);
+	return groupPath === '' ? `${key}` : `${groupPathes.join('-')}-${key}`;
 }
 
-function getRoutePath(pageInfo: PageInfo) {
-	if(isMainPage(pageInfo)){
+function getRoutePath({ groupPath = "", key = "" }: { groupPath: string, key: string }) {
+	if (isMainPage({ groupPath, key })) {
 		return '';
 	}
 
-	if(pageInfo.groupPath === '') {
-		return pageInfo.key;
+	if (groupPath === '') {
+		return key;
 	}
 
-	return `${pageInfo.groupPath}/${pageInfo.key}`;
+	return `${groupPath}/${key}`;
 }
 
-function isMainPage(pageInfo: PageInfo) {
-	return pageInfo.groupPath === '' && pageInfo.key === 'main';
+function isMainPage({ groupPath = "", key = "" }: { groupPath: string, key: string }) {
+	return groupPath === '' && key === 'main';
 }
-

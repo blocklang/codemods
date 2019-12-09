@@ -33,7 +33,7 @@ export function generate(modelDir: string = ''): void {
 		return;
 	}
 
-	if(indexHtml.update(projectInfo.label || projectInfo.name)) {
+	if(!indexHtml.update(projectInfo.label || projectInfo.name)) {
 		process.exit(1);
 		return;
 	}

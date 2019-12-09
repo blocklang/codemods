@@ -20,6 +20,7 @@ export function update(projectName: string): boolean {
 		const dom = new jsdom.JSDOM(indexHtmlContent);
 		dom.window.document.title = projectName;
 		fs.writeFileSync(indexHtmlPath, prettier.format(dom.serialize(), { parser: 'html' }));
+		console.log("更新完成。")
 		return true;
 	} catch(error) {
 		console.error("更新 index.html 失败！");

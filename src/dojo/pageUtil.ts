@@ -10,5 +10,9 @@ import { kebabCase } from 'lodash';
  * @param pageInfo 页面基本信息
  */
 export function getPagePath(pageInfo: PageInfo) {
-    return path.join(process.cwd(), 'src', 'pages', kebabCase(pageInfo.groupPath), kebabCase(pageInfo.key), `index.ts`);
+    return path.join('src', 'pages', kebabCase(pageInfo.groupPath), kebabCase(pageInfo.key), `index.ts`);
+}
+
+export function getPageGroupPathes(groupPath: string = "") {
+    return groupPath === "" ? [] : groupPath.split("/");
 }

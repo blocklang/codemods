@@ -16,6 +16,7 @@ import { ENCODING_UTF8 } from '../util';
  * @param dependences 项目依赖列表
  */
 export function update(projectInfo: ProjectInfo, dependencies: Dependency[] = []): boolean {
+	console.log("开始更新 package.json 文件");
 	// 调整 package.json 中的 name 和 version
 	try {
 		const packageJsonFilePath = join(process.cwd(), 'package.json');
@@ -44,5 +45,7 @@ export function update(projectInfo: ProjectInfo, dependencies: Dependency[] = []
 		console.error('用户配置的依赖安装失败');
 		return false;
 	}
+
+	console.log("更新完成。");
 	return true;
 }
