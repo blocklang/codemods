@@ -1,3 +1,7 @@
 {
-    "suites": "tests/unit/**/*.ts"
+    "suites": "tests/unit/**/*.ts",
+    "coverage": [
+        "./src/**/*.ts",
+        "!./src/bin/**"
+    ]
 }
