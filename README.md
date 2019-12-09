@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/codemods.svg)](https://badge.fury.io/js/codemods)
 [![Build Status](https://travis-ci.org/blocklang/codemods.svg?branch=master)](https://travis-ci.org/blocklang/codemods)
+[![codecov](https://codecov.io/gh/blocklang/codemods/branch/master/graph/badge.svg)](https://codecov.io/gh/blocklang/codemods)
 
 [Block Lang](https://blocklang.com) 客户端代码生成工具。
 
