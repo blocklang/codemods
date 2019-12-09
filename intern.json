@@ -4,10 +4,10 @@
         "./src/**/*.ts",
         "!./src/bin/**"
     ],
-    "reporters+": {
+    "reporters+": [{
         "name": "jsoncoverage",
         "options": {
           "filename": "coverage.json"
         }
-    }
+    }, "runner"]
 }
