@@ -7,7 +7,8 @@
     "build:tsc": "tsc",
     "build:templates": "shx cp -r src/templates dist/src/",
     "clean": "shx rm -rf dist",
-    "build": "npm run clean && npm run build:tsc && npm run build:templates && shx cp package.json dist/src/ && shx cp README.md dist/src/"
+    "build": "npm run clean && npm run build:tsc && npm run build:templates && shx cp package.json dist/src/ && shx cp README.md dist/src/",
+    "uploadCoverage": "codecov --file=coverage/coverage.json",
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@types/node": "10.17.1",
     "@types/sinon": "^7.5.1",
+    "codecov": "^3.6.1",
     "husky": "^3.1.0",
     "intern": "^4.7.0",
     "lint-staged": "^9.5.0",

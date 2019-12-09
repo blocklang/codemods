@@ -3,5 +3,11 @@
     "coverage": [
         "./src/**/*.ts",
         "!./src/bin/**"
-    ]
+    ],
+    "reporters+": {
+        "name": "jsoncoverage",
+        "options": {
+          "filename": "coverage.json"
+        }
+    }
 }
