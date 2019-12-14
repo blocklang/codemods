@@ -1,5 +1,6 @@
 import { AttachedWidget, Dependency } from '../interfaces';
 import { uniqWith, upperFirst, kebabCase } from 'lodash';
+import * as logger from '../logger';
 
 // 页面中的导入分两种：
 // 1. UI 部件
@@ -27,7 +28,7 @@ export function getWidgetImports(
 			// 先进行校验
 			const dep = buildDependences.find((buildDep) => buildDep.apiRepoId === item.apiRepoId);
 			if (!dep) {
-				console.log(`没有找到 ${item.widgetName} 部件对应的 build 版依赖`);
+				logger.info(`没有找到 ${item.widgetName} 部件对应的 build 版依赖`);
 				return false;
 			}
 			return true;

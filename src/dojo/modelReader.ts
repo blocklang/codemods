@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as glob from 'glob';
 import { ProjectInfo, Dependency, PageModel } from '../interfaces';
 import { ENCODING_UTF8 } from '../util';
+import * as logger from '../logger';
 
 const PROJECT_INFO = 'project.json';
 const DEPENDENCES_INFO = 'dependences.json';
@@ -15,14 +16,14 @@ const DEPENDENCES_INFO = 'dependences.json';
 export function readProjectJson(modelDir: string): ProjectInfo | undefined {
     const filePath = path.resolve(modelDir, PROJECT_INFO);
     if (!fs.existsSync(filePath)) {
-        console.error(`${filePath} 不存在！`);
+        logger.error(`${filePath} 不存在！`);
         return;
     }
     const content = fs.readFileSync(filePath, ENCODING_UTF8);
     try{
         return JSON.parse(content) as ProjectInfo;
     }catch(error) {
-        console.error(error);
+        logger.error(error);
     }
 }
 
@@ -34,14 +35,14 @@ export function readProjectJson(modelDir: string): ProjectInfo | undefined {
 export function readDependencesJson(modelDir: string): Dependency[] | undefined {
     const filePath = path.resolve(modelDir, DEPENDENCES_INFO);
     if (!fs.existsSync(filePath)) {
-        console.error(`${filePath} 不存在！`);
+        logger.error(`${filePath} 不存在！`);
         return;
     }
     const dependenceContent = fs.readFileSync(filePath, ENCODING_UTF8);
     try {
         return JSON.parse(dependenceContent) as Dependency[];
     } catch (error) {
-        console.error(error);
+        logger.error(error);
     }
 }
 

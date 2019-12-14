@@ -2,6 +2,7 @@ import { PageInfo } from '../interfaces';
 import { ArrayLiteralExpression, Project } from 'ts-morph';
 import { join } from 'path';
 import { getPageGroupPathes } from './pageUtil';
+import * as logger from '../logger';
 
 /**
  * 往 `src/routes.ts` 文件中追加 route config
@@ -11,16 +12,16 @@ import { getPageGroupPathes } from './pageUtil';
  */
 export function update(project: Project, pageInfos: PageInfo[] = []): boolean {
 	const routesTsFileName = 'src/routes.ts';
-	console.log(`开始更新 ${routesTsFileName} 文件`);
+	logger.info(`开始更新 ${routesTsFileName} 文件`);
 
 	const routesTsSourceFile = project.getSourceFile(join(process.cwd(), routesTsFileName));
 	if (!routesTsSourceFile) {
-		console.error(`在模板项目中没有找到 ${routesTsFileName} 文件`);
+		logger.error(`在模板项目中没有找到 ${routesTsFileName} 文件`);
 		return false;
 	}
 	const routesTsDefaultExport = routesTsSourceFile.getExportAssignment((d) => d.isExportEquals() === false);
 	if (!routesTsDefaultExport) {
-		console.error(`在 ${routesTsFileName} 文件中缺失默认的导出语句。`);
+		logger.error(`在 ${routesTsFileName} 文件中缺失默认的导出语句。`);
 		return false;
 	}
 
@@ -28,7 +29,7 @@ export function update(project: Project, pageInfos: PageInfo[] = []): boolean {
 	pageInfos.forEach((pageInfo: PageInfo) => updatePage(arrayLiteralExpression, pageInfo));
 
 	routesTsSourceFile.formatText();
-	console.log("更新完成。");
+	logger.info("更新完成。");
 	return true;
 }
 

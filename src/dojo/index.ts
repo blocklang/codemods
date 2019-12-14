@@ -8,6 +8,8 @@ import * as routesTs from './routesTs';
 import * as pageTs from './pageTs';
 import * as appTs from './appTs';
 
+import * as logger from '../logger';
+
 const project = new Project({
 	tsConfigFilePath: path.join(process.cwd(), 'tsconfig.json')
 });
@@ -26,7 +28,7 @@ export function generate(modelDir: string = ''): void {
 	}
 
 	const pageModels = modelReader.readAllPageModels(modelDir);
-	console.log(`共有 ${pageModels.length} 个页面。`);
+	logger.info(`共有 ${pageModels.length} 个页面。`);
 
 	if(!packageJson.update(projectInfo, dependences)) {
 		process.exit(1);
@@ -53,5 +55,5 @@ export function generate(modelDir: string = ''): void {
 
 	project.saveSync();
 
-	console.log('成功生成 Dojo App 代码!');
+	logger.info('成功生成 Dojo App 代码!');
 }

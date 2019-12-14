@@ -4,17 +4,18 @@ import { kebabCase, camelCase, upperFirst } from 'lodash';
 import { join } from 'path';
 import { getPageGroupPathes } from './pageUtil';
 import { getRouteOutlet } from './routesTs';
+import * as logger from '../logger';
 
 export function update(project: Project, pageModels: PageModel[]): boolean {
     // 1. 添加 import 语句
     // 1.1. 获取 src/App.ts 文件
     const appTsFileName = 'src/App.ts';
-    console.log(`开始更新 ${appTsFileName} 文件`);
+    logger.info(`开始更新 ${appTsFileName} 文件`);
     const appTsPath = join(process.cwd(), appTsFileName);
-    console.log("aaa", appTsPath);
+
     const sourceFile = project.getSourceFile(appTsPath);
     if (!sourceFile) {
-        console.error(`在模板项目中没有找到 ${appTsFileName} 文件`);
+        logger.error(`在模板项目中没有找到 ${appTsFileName} 文件`);
         return false;
     }
     sourceFile.addImportDeclarations(getPageImports(pageModels.map(model => model.pageInfo)));
@@ -23,7 +24,7 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
     // 2.1 找默认的导出语句
     const defaultExportAssignment = sourceFile.getExportAssignment((d) => d.isExportEquals() === false);
     if (!defaultExportAssignment) {
-        console.error(`在 ${appTsFileName} 文件中没有找到默认的导出语句。`);
+        logger.error(`在 ${appTsFileName} 文件中没有找到默认的导出语句。`);
         return false;
     }
 
@@ -31,7 +32,7 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
     const factory = defaultExportAssignment.getExpression() as CallExpression;
     const funcArgs = factory.getArguments();
     if (funcArgs.length !== 1) {
-        console.error(
+        logger.error(
             `在 ${appTsFileName} 的 factory 函数中有且只能有一个参数，但现在有 ${funcArgs.length} 个参数。`
         );
         return false;
@@ -40,33 +41,33 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
     // 2.3 找出 factory 函数的第一个输入参数，是一个函数
     const firstParam = funcArgs[0];
     if(!(firstParam instanceof FunctionDeclaration)) {
-        console.error("should be 'export default factory(function App(){});'");
+        logger.error("should be 'export default factory(function App(){});'");
         return false;
     }
     const functionDeclaration = firstParam as FunctionDeclaration;
     // 2.4 找出上述函数的返回语句
     const functionBody = functionDeclaration.getBody();
     if (!functionBody) {
-        console.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，但没有找到函数体。`);
+        logger.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，但没有找到函数体。`);
         return false;
     }
     const returnStatement = functionBody.getLastChildByKind(ts.SyntaxKind.ReturnStatement);
     if (!returnStatement) {
-        console.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，在函数体中没有找到返回语句。`);
+        logger.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，在函数体中没有找到返回语句。`);
         return false;
     }
 
     // 对应 v('div', { classes: [css.root] }, []);
     const v = returnStatement.getExpression() as CallExpression;
     if (!v) {
-        console.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，在返回语句中没有找到 v() 语句。`);
+        logger.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，在返回语句中没有找到 v() 语句。`);
         return false;
     }
 
     // 找到第三个输入参数 []，然后在其中写入 Outlet 部件
     const vArgs = v.getArguments();
     if (vArgs.length !== 3) {
-        console.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，在返回语句的 v() 中必须有三个输入参数，但却有 ${vArgs.length} 个。`);
+        logger.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，在返回语句的 v() 中必须有三个输入参数，但却有 ${vArgs.length} 个。`);
         return false;
     }
 
@@ -90,7 +91,7 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
 
     sourceFile.formatText();
 
-    console.log("更新完成。");
+    logger.info("更新完成。");
     return true;
 }
 

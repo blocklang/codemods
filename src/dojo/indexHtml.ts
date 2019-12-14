@@ -3,6 +3,7 @@ import { join } from 'path';
 import * as jsdom from 'jsdom';
 import * as prettier from 'prettier';
 import { ENCODING_UTF8 } from '../util';
+import * as logger from '../logger';
 
 /**
  * 更新 index.html 页面
@@ -12,7 +13,7 @@ import { ENCODING_UTF8 } from '../util';
  * @param projectName 项目显示名
  */
 export function update(projectName: string): boolean {
-	console.log("开始更新 index.html 文件");
+	logger.info("开始更新 index.html 文件");
 	// 获取 src/index.html 文件
 	const indexHtmlPath = join(process.cwd(), 'src/index.html');
 	try{
@@ -20,10 +21,10 @@ export function update(projectName: string): boolean {
 		const dom = new jsdom.JSDOM(indexHtmlContent);
 		dom.window.document.title = projectName;
 		fs.writeFileSync(indexHtmlPath, prettier.format(dom.serialize(), { parser: 'html' }));
-		console.log("更新完成。")
+		logger.info("更新完成。")
 		return true;
 	} catch(error) {
-		console.error("更新 index.html 失败！");
+		logger.error("更新 index.html 失败！");
 		return false;
 	}
 }

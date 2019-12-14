@@ -7,6 +7,7 @@ import { renderPage } from './pageRender';
 import { getWidgetImports } from './pageImports';
 import { ENCODING_UTF8 } from '../util';
 import { getPagePath } from './pageUtil';
+import * as logger from '../logger';
 
 /**
  * 
@@ -16,7 +17,7 @@ import { getPagePath } from './pageUtil';
  * @returns {boolean} 创建成功则返回 `true`，否则返回 `false`
  */
 export function create(project: Project, dependences: Dependency[] = [], pageModels: PageModel[] = []): boolean {
-	console.log(`需生成 ${pageModels.length} 个页面。`);
+	logger.info(`需生成 ${pageModels.length} 个页面。`);
 	if(pageModels.length === 0) {
 		return true;
 	}
@@ -53,13 +54,13 @@ function readPageTemplate(project: Project): string {
 function createPage(project: Project, dependences: Dependency[], pageTemplate: string, pageModel: PageModel, index: number): boolean {
 	// 修改文件名
 	const pageFileName = getPagePath(pageModel.pageInfo);
-	console.log(`开始生成第 ${index + 1} 个页面 ${pageFileName}`)
+	logger.info(`开始生成第 ${index + 1} 个页面 ${pageFileName}`)
 
 	let sourceFile: SourceFile;
 	try {
 		sourceFile = project.createSourceFile(path.join(process.cwd(), pageFileName), pageTemplate);
 	} catch (error) {
-		console.error(`创建源文件 ${pageFileName} 失败，文件已存在！`);
+		logger.error(`创建源文件 ${pageFileName} 失败，文件已存在！`);
 		return false;
 	}
 
@@ -68,7 +69,7 @@ function createPage(project: Project, dependences: Dependency[], pageTemplate: s
 	const prefix = upperFirst(camelCase(pageModel.pageInfo.key));
 	const propertiesInterface = sourceFile.getInterface('PageProperties');
 	if (!propertiesInterface) {
-		console.error('在 Page.ts 模板文件中没有找到 PageProperties 属性接口定义');
+		logger.error('在 Page.ts 模板文件中没有找到 PageProperties 属性接口定义');
 		return false;
 	}
 	propertiesInterface.rename(`${prefix}Properties`);
@@ -77,14 +78,14 @@ function createPage(project: Project, dependences: Dependency[], pageTemplate: s
 	// 1. 获取 default export
 	const defaultExportAssignment = sourceFile.getExportAssignment((d) => d.isExportEquals() === false);
 	if (!defaultExportAssignment) {
-		console.error('在 Page.ts 模板文件中没有找到默认的导出语句。');
+		logger.error('在 Page.ts 模板文件中没有找到默认的导出语句。');
 		return false;
 	}
 	// 2. 获取 factory 调用
 	const factory = defaultExportAssignment.getExpression() as CallExpression;
 	const funcArgs = factory.getArguments();
 	if (funcArgs.length !== 1) {
-		console.error(
+		logger.error(
 			`在 Page.ts 模板的 factory 函数中有且只能有一个参数，但现在有 ${funcArgs.length} 个参数。`
 		);
 		return false;
@@ -110,7 +111,7 @@ function createPage(project: Project, dependences: Dependency[], pageTemplate: s
 
 	sourceFile.formatText();
 
-	console.log("完成。");
+	logger.info("完成。");
 	return true;
 }
 
