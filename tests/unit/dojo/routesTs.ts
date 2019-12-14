@@ -3,6 +3,7 @@ import { InMemoryFileSystemHost } from '@ts-morph/common';
 import { update } from '../../../src/dojo/routesTs';
 import { PageInfo } from '../../../src/interfaces';
 import {stub } from 'sinon';
+import * as logger from '../../../src/logger';
 
 const { describe, it, beforeEach  } = intern.getPlugin('interface.bdd');
 const { assert } = intern.getPlugin('chai');
@@ -18,23 +19,23 @@ describe('dojo/routesTs', () => {
     });
 
     it('update: src/routes.ts not found', () => {
-        const consoleStub = stub(console, "error");
+        const loggerStub = stub(logger, "error");
         const cwdStub = stub(process, "cwd").returns("");
 
         assert.isFalse(update(project, []));
-        assert.isTrue(consoleStub.calledOnceWith("在模板项目中没有找到 src/routes.ts 文件"));
+        assert.isTrue(loggerStub.calledOnceWith("在模板项目中没有找到 src/routes.ts 文件"));
         
-        consoleStub.restore();
+        loggerStub.restore();
         cwdStub.restore();
     });
 
     it('update: src/routes.ts no default export', () => {
         project.createSourceFile("src/routes.ts", "");
         const cwdStub = stub(process, "cwd").returns("");
-        const consoleStub = stub(console, "error");
+        const loggerStub = stub(logger, "error");
         assert.isFalse(update(project, []));
-        assert.isTrue(consoleStub.calledOnceWith("在 src/routes.ts 文件中缺失默认的导出语句。"));
-        consoleStub.restore();
+        assert.isTrue(loggerStub.calledOnceWith("在 src/routes.ts 文件中缺失默认的导出语句。"));
+        loggerStub.restore();
         cwdStub.restore();
     });
 

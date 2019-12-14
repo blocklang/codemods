@@ -4,6 +4,7 @@ import { Project } from 'ts-morph';
 import { PageModel } from '../../../src/interfaces';
 import {stub} from 'sinon';
 import * as path from 'path';
+import * as logger from '../../../src/logger';
 
 const { describe, it, beforeEach } = intern.getPlugin('interface.bdd');
 const { assert } = intern.getPlugin('chai');
@@ -20,7 +21,7 @@ describe('dojo/pageTs', () => {
 
     it('create: page source file exists', () => {
         const cwdStub = stub(process, "cwd").returns("");
-        const consoleStub = stub(console, "error");
+        const loggerStub = stub(logger, "error");
 
         project.createSourceFile("src/pages/main/index.ts", "");
         const pageModels: PageModel[] = [{
@@ -32,10 +33,10 @@ describe('dojo/pageTs', () => {
             widgets: []
         }];
         assert.isFalse(create(project, [], pageModels));
-        assert.isTrue(consoleStub.calledOnceWith(`创建源文件 ${path.join("src/pages/main/index.ts")} 失败，文件已存在！`))
+        assert.isTrue(loggerStub.calledOnceWith(`创建源文件 ${path.join("src/pages/main/index.ts")} 失败，文件已存在！`))
 
         cwdStub.restore();
-        consoleStub.restore();
+        loggerStub.restore();
     });
 
 	it('create: default', () => {

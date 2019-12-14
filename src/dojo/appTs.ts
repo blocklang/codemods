@@ -1,5 +1,5 @@
 import { PageModel, PageInfo } from '../interfaces';
-import { Project, CallExpression, FunctionDeclaration, ts, ArrayLiteralExpression } from 'ts-morph';
+import { Project, CallExpression, ts, ArrayLiteralExpression, Node, FunctionExpression } from 'ts-morph';
 import { kebabCase, camelCase, upperFirst } from 'lodash';
 import { join } from 'path';
 import { getPageGroupPathes } from './pageUtil';
@@ -40,13 +40,14 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
 
     // 2.3 找出 factory 函数的第一个输入参数，是一个函数
     const firstParam = funcArgs[0];
-    if(!(firstParam instanceof FunctionDeclaration)) {
+    if(!Node.isFunctionExpression(firstParam)) {
         logger.error("should be 'export default factory(function App(){});'");
         return false;
     }
-    const functionDeclaration = firstParam as FunctionDeclaration;
+    const functionExpression = firstParam as FunctionExpression;
+
     // 2.4 找出上述函数的返回语句
-    const functionBody = functionDeclaration.getBody();
+    const functionBody = functionExpression.getBody();
     if (!functionBody) {
         logger.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，但没有找到函数体。`);
         return false;
