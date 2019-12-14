@@ -16,7 +16,7 @@ import { ENCODING_UTF8 } from '../util';
  * @param dependences 项目依赖列表
  */
 export function update(projectInfo: ProjectInfo, dependencies: Dependency[] = []): boolean {
-	console.log("开始更新 package.json 文件");
+	console.log("更新 package.json 文件");
 	// 调整 package.json 中的 name 和 version
 	try {
 		const packageJsonFilePath = join(process.cwd(), 'package.json');
@@ -38,12 +38,15 @@ export function update(projectInfo: ProjectInfo, dependencies: Dependency[] = []
 	}
 
 	// 安装用户配置的依赖
+	console.log("安装用户配置的依赖");
 	const pkgDeps = dependencies.map(({ name, version }) => `${name}@${version}`);
-	console.log('pkgDeps', pkgDeps);
-	const { status: yarnAddCustomStatus } = spawn.sync('yarn', ['add', ...pkgDeps], { stdio: 'inherit' });
-	if (yarnAddCustomStatus && yarnAddCustomStatus !== 0) {
-		console.error('用户配置的依赖安装失败');
-		return false;
+	console.log(`共需安装 ${pkgDeps.length} 个依赖`);
+	if(pkgDeps.length > 0) {
+		const { status: yarnAddCustomStatus } = spawn.sync('yarn', ['add', ...pkgDeps], { stdio: 'inherit' });
+		if (yarnAddCustomStatus && yarnAddCustomStatus !== 0) {
+			console.error('用户配置的依赖安装失败');
+			return false;
+		}
 	}
 
 	console.log("更新完成。");
