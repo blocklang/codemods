@@ -24,6 +24,8 @@ function renderWidget(writer: CodeBlockWriter, widget: AttachedWidget, index: nu
 		.quote()
 		.write(widget.id)
 		.quote();
+	
+	// 如果部件的属性是必填的，则必须在生成模型数据时就处理好默认值。
 	widget.properties.forEach((prop) => {
 		const value = prop.value || prop.defaultValue;
 		if (value) {
@@ -34,6 +36,10 @@ function renderWidget(writer: CodeBlockWriter, widget: AttachedWidget, index: nu
 					.quote()
 					.write(value)
 					.quote();
+			} else if(prop.valueType === 'boolean' || prop.valueType === 'int' || prop.valueType === 'float' ) {
+				writer.write(value);
+			} else if(prop.valueType === 'function') {
+				writer.write(value);
 			}
 		}
 	});
