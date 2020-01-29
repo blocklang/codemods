@@ -43,7 +43,18 @@ export interface AttachedWidgetProperty {
 	isExpr: boolean;
 }
 
+export type PageDataItemValueType = "String" | "Number" | "Date" | "Boolean" | "Object" | "Array";
+
+interface PageDataItem {
+	id: string;
+	parentId: string;
+	name: string;
+	value?: string;
+	type: PageDataItemValueType;
+}
+
 export interface PageModel {
 	pageInfo: PageInfo;
 	widgets: AttachedWidget[];
+	data: PageDataItem[];
 }

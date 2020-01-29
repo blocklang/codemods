@@ -30,7 +30,8 @@ describe('dojo/pageTs', () => {
                 key: 'main',
                 groupPath: ''
             },
-            widgets: []
+            widgets: [],
+            data: []
         }];
         assert.isFalse(create(project, [], pageModels));
         assert.isTrue(loggerStub.calledOnceWith(`创建源文件 ${path.join("src/pages/main/index.ts")} 失败，文件已存在！`))
@@ -51,7 +52,8 @@ describe('dojo/pageTs', () => {
                 key: 'main',
                 groupPath: ''
             },
-            widgets: []
+            widgets: [],
+            data: []
         }];
         assert.isTrue(create(project, [], pageModels));
         assert.isNotEmpty(project.getSourceFileOrThrow("src/pages/main/index.ts").getText());
@@ -66,7 +68,8 @@ describe('dojo/pageTs', () => {
                 key: 'AcAc',
                 groupPath: 'AbAb'
             },
-            widgets: []
+            widgets: [],
+            data: []
         }];
         assert.isTrue(create(project, [], pageModels));
         assert.isNotEmpty(project.getSourceFileOrThrow("src/pages/ab-ab/ac-ac/index.ts").getText());

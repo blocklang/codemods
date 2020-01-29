@@ -6,6 +6,7 @@ import * as packageJson from './packageJson';
 import * as indexHtml from './indexHtml';
 import * as routesTs from './routesTs';
 import * as pageTs from './pageTs';
+import * as interfaceDTs from './interfacesDTs';
 import * as appTs from './appTs';
 
 import * as logger from '../logger';
@@ -45,6 +46,10 @@ export function generate(modelDir: string = ''): void {
 		return;
 	}
 	if(!pageTs.create(project, dependences, pageModels)){
+		process.exit(1);
+		return;
+	}
+	if(interfaceDTs.update(project, pageModels)) {
 		process.exit(1);
 		return;
 	}
