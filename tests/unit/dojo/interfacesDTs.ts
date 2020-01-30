@@ -162,6 +162,38 @@ describe('dojo/interfaceDTs', () => {
         assert.isTrue(loggerInfoStub.getCalls()[1].calledWith("完成。"));
     });
 
+    it('update: has one string property and groupPath is not blank and has two level', () => {
+        project.createSourceFile("src/interfaces.d.ts", "export interface State {}");
+
+        assert.isTrue(update(project, [{
+            pageInfo: {
+                id: 1,
+                key: 'main',
+                groupPath: 'a/b'
+            },
+            widgets: [],
+            data: [{
+                id: "1",
+                parentId: "-1",
+                name: "$",
+                type: "Object"
+            }, {
+                id: "2",
+                parentId: "1",
+                name: "str",
+                type: "String"
+            }]
+        }]));
+
+        const mainInterfaceSource = project.getSourceFileOrThrow("src/typing/a/b/main.d.ts").getFullText();
+        assert.equal(mainInterfaceSource, `export interface Main {\n    str: string;\n}\n`);
+
+        const stateInterfaceSource = project.getSourceFileOrThrow("src/interfaces.d.ts").getFullText();
+        assert.equal(stateInterfaceSource, `import { Main } from "./typing/a/b/main";\n\nexport interface State {\n    main: Main;\n}\n`);
+
+        assert.isTrue(loggerInfoStub.getCalls()[1].calledWith("完成。"));
+    });
+
     it('update: has one number property', () => {
         project.createSourceFile("src/interfaces.d.ts", "export interface State {}");
 

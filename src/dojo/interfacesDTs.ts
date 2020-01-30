@@ -2,7 +2,7 @@ import { PageModel, PageDataItem} from '../interfaces';
 import * as logger from '../logger';
 import { join } from 'path';
 import { Project, SourceFile } from 'ts-morph';
-import {camelCase, kebabCase, upperFirst} from "lodash";
+import {camelCase, upperFirst} from "lodash";
 
 export function update(project: Project, pageModels: PageModel[]): boolean {
     // 1. 获取 src/interfaces.d.ts 文件
@@ -23,14 +23,14 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
     }
 
     // 2. 为每个页面数据生成 interface
-    pageModels.forEach((pageModel, index) => {
+    pageModels.forEach((pageModel) => {
         if(pageModel.data.length <= 1) {
             return;
         }
 
         const camelCaseName = camelCase(pageModel.pageInfo.key);
 
-        const pageInterfaceFilePath = join(process.cwd(), 'src', 'typing', kebabCase(pageModel.pageInfo.groupPath), `${camelCaseName}.d.ts`);
+        const pageInterfaceFilePath = join(process.cwd(), 'src', 'typing', pageModel.pageInfo.groupPath, `${camelCaseName}.d.ts`);
         let pageInterfaceSourceFile;
         try{
             pageInterfaceSourceFile = project.createSourceFile(pageInterfaceFilePath);
@@ -45,7 +45,7 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
         // 3. 在 State 中添加属性
         interfacesDTsSourceFile.addImportDeclaration({
             namedImports: [`${rootInterfaceName}`],
-            moduleSpecifier: `./typing/${pageModel.pageInfo.groupPath?kebabCase(pageModel.pageInfo.groupPath)+'/':''}${camelCaseName}`
+            moduleSpecifier: `./typing/${pageModel.pageInfo.groupPath?pageModel.pageInfo.groupPath+'/':''}${camelCaseName}`
         });
         stateInterface.addProperty({name: camelCaseName, type: rootInterfaceName});
     });
