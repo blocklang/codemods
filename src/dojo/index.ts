@@ -7,6 +7,7 @@ import * as indexHtml from './indexHtml';
 import * as routesTs from './routesTs';
 import * as pageTs from './pageTs';
 import * as interfaceDTs from './interfacesDTs';
+import * as processesTs from './processesTs';
 import * as appTs from './appTs';
 
 import * as logger from '../logger';
@@ -45,14 +46,22 @@ export function generate(modelDir: string = ''): void {
 		process.exit(1);
 		return;
 	}
+
 	if(!pageTs.create(project, dependences, pageModels)){
 		process.exit(1);
 		return;
 	}
+
 	if(interfaceDTs.update(project, pageModels)) {
 		process.exit(1);
 		return;
 	}
+
+	if(processesTs.create(project, pageModels)) {
+		process.exit(1);
+		return;
+	}
+
 	if(!appTs.update(project, pageModels)) {
 		process.exit(1);
 		return;
