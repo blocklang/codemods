@@ -46,6 +46,16 @@ describe('dojo/pageUtil', () => {
         assert.equal(pagePath, path.join("src/pages/ab-ab/ab-ab/index.ts"));
     });
 
+    it('getPagePath: src/pages/ab-ab/ac-ac/ad-ad', () => {
+        const pageInfo: PageInfo = {
+            id: 1,
+            key: "AdAd",
+            groupPath: "AbAb/AcAc"
+        };
+        const pagePath = getPagePath(pageInfo);
+        assert.equal(pagePath, path.join("src/pages/ab-ab/ac-ac/ad-ad/index.ts"));
+    });
+
     it("getPageGroupPathes: empty string", () => {
         assert.isEmpty(getPageGroupPathes(""));
     });

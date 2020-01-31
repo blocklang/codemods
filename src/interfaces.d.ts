@@ -17,6 +17,12 @@ export interface Dependency {
 
 // 注意：Dependency 和 ComponentRepo 功能有些重叠，待进一步明确。
 
+/**
+ * @type 页面基本信息
+ * 
+ * 
+ * @property groupPath 分组的路径，使用 / 隔开
+ */
 export interface PageInfo {
 	id: number;
 	key: string;
