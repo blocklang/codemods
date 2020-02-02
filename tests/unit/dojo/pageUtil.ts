@@ -1,4 +1,4 @@
-import { getPagePath, getPageGroupPathes } from "../../../src/dojo/pageUtil";
+import { getPagePath, getPageGroupPathes, getStateInterfacePropertyName, getStateInterfacePropertyType } from "../../../src/dojo/pageUtil";
 import { PageInfo } from '../../../src/interfaces';
 import * as path from 'path';
 
@@ -62,6 +62,51 @@ describe('dojo/pageUtil', () => {
 
     it("getPageGroupPathes: one path", () => {
         assert.equal(getPageGroupPathes("a").length, 1);
+    });
+
+    it("getStateInterfacePropertyName: camelCase and groupPath is blank", () => {
+        const pageInfo: PageInfo = {
+            id: 1,
+            key: "Main",
+            groupPath: ""
+        };
+        assert.equal(getStateInterfacePropertyName(pageInfo), "main");
+    });
+
+    it("getStateInterfacePropertyName: camelCase and groupPath is not blank and only has one letter", () => {
+        const pageInfo: PageInfo = {
+            id: 1,
+            key: "main",
+            groupPath: "a/b"
+        };
+        assert.equal(getStateInterfacePropertyName(pageInfo), "aBMain");
+    });
+
+    it("getStateInterfacePropertyName: camelCase and groupPath is not blank", () => {
+        const pageInfo: PageInfo = {
+            id: 1,
+            key: "main",
+            groupPath: "ab/ac"
+        };
+        assert.equal(getStateInterfacePropertyName(pageInfo), "abAcMain");
+    });
+
+    it("getStateInterfacePropertyType: groupPath is blank", () => {
+        const pageInfo: PageInfo = {
+            id: 1,
+            key: "main",
+            groupPath: ""
+        };
+        assert.equal(getStateInterfacePropertyType(pageInfo), "Main");
+    });
+
+    it("getStateInterfacePropertyType: groupPath is not blank", () => {
+        const pageInfo: PageInfo = {
+            id: 1,
+            key: "main",
+            groupPath: "a/b"
+        };
+        assert.equal(getStateInterfacePropertyType(pageInfo), "ABMain");
     });
 
 });

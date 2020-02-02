@@ -157,7 +157,7 @@ describe('dojo/interfaceDTs', () => {
         assert.equal(mainInterfaceSource, `export interface Main {\n    str: string;\n}\n`);
 
         const stateInterfaceSource = project.getSourceFileOrThrow("src/interfaces.d.ts").getFullText();
-        assert.equal(stateInterfaceSource, `import { Main } from "./typing/a/main";\n\nexport interface State {\n    main: Main;\n}\n`);
+        assert.equal(stateInterfaceSource, `import { Main as AMain } from "./typing/a/main";\n\nexport interface State {\n    aMain: AMain;\n}\n`);
 
         assert.isTrue(loggerInfoStub.getCalls()[1].calledWith("完成。"));
     });
@@ -189,7 +189,7 @@ describe('dojo/interfaceDTs', () => {
         assert.equal(mainInterfaceSource, `export interface Main {\n    str: string;\n}\n`);
 
         const stateInterfaceSource = project.getSourceFileOrThrow("src/interfaces.d.ts").getFullText();
-        assert.equal(stateInterfaceSource, `import { Main } from "./typing/a/b/main";\n\nexport interface State {\n    main: Main;\n}\n`);
+        assert.equal(stateInterfaceSource, `import { Main as ABMain } from "./typing/a/b/main";\n\nexport interface State {\n    aBMain: ABMain;\n}\n`);
 
         assert.isTrue(loggerInfoStub.getCalls()[1].calledWith("完成。"));
     });

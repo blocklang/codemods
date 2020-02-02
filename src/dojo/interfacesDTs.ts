@@ -3,6 +3,7 @@ import * as logger from '../logger';
 import { join } from 'path';
 import { Project, SourceFile } from 'ts-morph';
 import {camelCase, upperFirst} from "lodash";
+import { getStateInterfacePropertyName, getStateInterfacePropertyType } from './pageUtil';
 
 export function update(project: Project, pageModels: PageModel[]): boolean {
     // 1. 获取 src/interfaces.d.ts 文件
@@ -28,6 +29,8 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
             return;
         }
 
+        // 作为 State 的 property 使用的话，当页面存放在文件夹下时会有 bug
+
         const camelCaseName = camelCase(pageModel.pageInfo.key);
 
         const pageInterfaceFilePath = join(process.cwd(), 'src', 'typing', pageModel.pageInfo.groupPath, `${camelCaseName}.d.ts`);
@@ -38,16 +41,17 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
             logger.error(`创建源文件 ${pageInterfaceFilePath} 失败，文件已存在！`);
             return false;
         }
-
         const rootInterfaceName = createPageInterfaces(pageInterfaceSourceFile, pageModel);
         pageInterfaceSourceFile.formatText();
 
         // 3. 在 State 中添加属性
+        const stateInterfacePropertyType = getStateInterfacePropertyType(pageModel.pageInfo);
         interfacesDTsSourceFile.addImportDeclaration({
-            namedImports: [`${rootInterfaceName}`],
+            namedImports: [rootInterfaceName === stateInterfacePropertyType? rootInterfaceName : {name: rootInterfaceName, alias:stateInterfacePropertyType}],
             moduleSpecifier: `./typing/${pageModel.pageInfo.groupPath?pageModel.pageInfo.groupPath+'/':''}${camelCaseName}`
         });
-        stateInterface.addProperty({name: camelCaseName, type: rootInterfaceName});
+
+        stateInterface.addProperty({name: getStateInterfacePropertyName(pageModel.pageInfo), type: stateInterfacePropertyType});
     });
 
     interfacesDTsSourceFile.formatText();
@@ -78,6 +82,7 @@ function createPageInterfaces(pageInterfaceSourceFile: SourceFile, pageModel: Pa
         return interfaceName;
     }
 
+    // TODO: 要先使用 camelCase 转换后再作为 key
     function getInterfaceName(currentDataItem: PageDataItem) {
         if (currentDataItem.parentId === "-1") {
             return rootInterfaceName;

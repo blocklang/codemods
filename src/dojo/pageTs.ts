@@ -1,4 +1,4 @@
-import { Project, CallExpression, ParameterDeclaration, FunctionDeclaration, SourceFile } from 'ts-morph';
+import { Project, CallExpression, FunctionDeclaration, SourceFile } from 'ts-morph';
 import * as path from 'path';
 import * as fs from 'fs';
 import { PageModel, Dependency } from '../interfaces';
@@ -8,6 +8,7 @@ import { getWidgetImports } from './pageImports';
 import { ENCODING_UTF8 } from '../util';
 import { getPagePath } from './pageUtil';
 import * as logger from '../logger';
+import { declareVariables, initPageData } from './pageData';
 
 /**
  * 
@@ -92,19 +93,58 @@ function createPage(project: Project, dependences: Dependency[], pageTemplate: s
 	}
 	// 3. 往 factory 函数中传入的参数
 	const firstParam = funcArgs[0];
-	const parameterDeclaration = firstParam as ParameterDeclaration;
+	const parameterDeclaration = firstParam as FunctionDeclaration;
 	parameterDeclaration.rename(prefix);
+
+	// 如果只有一个根节点，则是一个空 json 对象，则看作未定义页面数据。
+	const hasDefinePageData = pageModel.data.length > 1;
+	// 如果定义了 page data，则 import store，注意取相对路径
+	if(hasDefinePageData) {
+		// import store from '../store';
+		// import { initDataProcess } from '../processes/mainProcesses';
+		sourceFile.addImportDeclaration({moduleSpecifier: "../store", defaultImport: "store"});
+		sourceFile.addImportDeclaration({moduleSpecifier: `../processes/${camelCase(pageModel.pageInfo.key)}Processes`, namedImports: ["initDataProcess"]})
+	
+		// export default factory(function Main({ properties, middleware: { store } }) {
+		// 添加 store middleware
+		parameterDeclaration.getParameters()[0].set({name: "{properties, middleware:{store}}"});
+	}
 	// 4. 添加 import 语句
+	// 在 import { v, create } from '@dojo/framework/core/vdom'; 中增加 w
+	const hasDefineWidget = pageModel.widgets.length > 0;
+	if(hasDefineWidget) {
+		const vdomImport = sourceFile.getImportDeclaration("@dojo/framework/core/vdom");
+		if(vdomImport) {
+			vdomImport.insertNamedImport(1, "w");
+		}
+	}
 	sourceFile.addImportDeclarations(getWidgetImports(dependences, pageModel.widgets));
-	// 5. 设置函数体
+	// 5. 添加 store 中间件
+	if(hasDefinePageData) {
+		// 为调用的 create 函数添加 store 参数
+		const factory = sourceFile.getVariableDeclaration("factory");
+		if(factory) {
+			const propertiesCallExpression = factory.getInitializer() as CallExpression;
+			const createCallExpression = propertiesCallExpression.getFirstChild()!.getFirstChild() as CallExpression;
+			if(createCallExpression) {
+				createCallExpression.addArgument("{store}");
+			}
+		}
+	}
+	// 6. 设置函数体
 	const functionDeclaration = firstParam as FunctionDeclaration;
 	functionDeclaration.setBodyText((writer) => {
 		writer.writeLine('const { } = properties();');
+		
+		if(hasDefinePageData){
+			initPageData(writer, pageModel.pageInfo);
+			declareVariables(writer, pageModel);
+		}
 
 		writer.write('return ');
 		writer.write("v('div', {}, [").newLine();
 
-		renderPage(writer, pageModel.widgets);
+		renderPage(writer, pageModel.widgets, pageModel.data);
 
 		writer.newLine().write(']);');
 	});
@@ -114,4 +154,3 @@ function createPage(project: Project, dependences: Dependency[], pageTemplate: s
 	logger.info("完成。");
 	return true;
 }
-
