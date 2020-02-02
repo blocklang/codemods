@@ -32,10 +32,10 @@ export function declareVariables(writer: CodeBlockWriter, pageModel: PageModel):
     const stateInterfacePropertyName = getStateInterfacePropertyName(pageModel.pageInfo);
     const variableNames = getVariableNames(data);
     // 去掉重复的 dataId
-    // const str = "1";
+    // const str = get(path("{pageName}", "fieldName"));
     // 1. 获取 dataId
-    // 2. 生成变量名
-    // 3. 获取变量值
+    // 2. 生成页面变量
+    // 3. 生成页面中的属性名
     uniqBy(isExprProps, 'value').forEach(item => {
         const {value: dataId} = item;
         if(dataId == undefined) {
