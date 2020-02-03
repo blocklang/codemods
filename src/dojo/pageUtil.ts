@@ -46,3 +46,12 @@ export function getStateInterfacePropertyType(pageInfo: PageInfo): string {
     const convertedGroupPath = groupPath.split("/").map(item => upperFirst(camelCase(item))).join("");
     return convertedGroupPath + upperFirst(camelCase(key));
 }
+
+export function getModuleSpecifier(moduleName: string, groupPath: string, rootPath?: string): string {
+    if(groupPath.trim().length === 0) {
+        return `${rootPath=== undefined? "." : rootPath}/${moduleName}`;
+    }
+   
+    const relativeGroupPath = groupPath.split("/").map(()=>"..").join("/");
+    return `${rootPath===undefined? "": rootPath + "/"}${relativeGroupPath}/${moduleName}`;
+}

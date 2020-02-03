@@ -5,6 +5,7 @@ import { camelCase } from 'lodash';
 import { join } from 'path';
 import { toJsonObject } from '../util';
 import * as stringifyObject from "stringify-object";
+import { getModuleSpecifier } from './pageUtil';
 
 export function create(project: Project, pageModels: PageModel[]): boolean {
     logger.info("开始创建 processes 文件");
@@ -33,7 +34,7 @@ export function create(project: Project, pageModels: PageModel[]): boolean {
         // 添加 import { commandFactory } from "./utils";
         // 添加 import { add } from "@dojo/framework/stores/state/operations";
         // 添加 import { createProcess } from "@dojo/framework/stores/process";
-        processesSourceFile.addImportDeclaration({ moduleSpecifier: "./utils", namedImports: ["commandFactory"] });
+        processesSourceFile.addImportDeclaration({ moduleSpecifier: getModuleSpecifier("utils", pageModel.pageInfo.groupPath), namedImports: ["commandFactory"] });
         processesSourceFile.addImportDeclaration({ moduleSpecifier: "@dojo/framework/stores/state/operations", namedImports: ["add"] });
         processesSourceFile.addImportDeclaration({ moduleSpecifier: "@dojo/framework/stores/process", namedImports: ["createProcess"] });
 

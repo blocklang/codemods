@@ -1,4 +1,4 @@
-import { getPagePath, getPageGroupPathes, getStateInterfacePropertyName, getStateInterfacePropertyType } from "../../../src/dojo/pageUtil";
+import { getPagePath, getPageGroupPathes, getStateInterfacePropertyName, getStateInterfacePropertyType, getModuleSpecifier } from "../../../src/dojo/pageUtil";
 import { PageInfo } from '../../../src/interfaces';
 import * as path from 'path';
 
@@ -107,6 +107,20 @@ describe('dojo/pageUtil', () => {
             groupPath: "a/b"
         };
         assert.equal(getStateInterfacePropertyType(pageInfo), "ABMain");
+    });
+
+    // 从当前目录往上找
+    it("getModuleSpecifier: groupPath is blank", () => {
+        assert.equal(getModuleSpecifier("util", ""), "./util");
+    });
+
+    // 从当前目录往上找
+    it("getModuleSpecifier: groupPath is not blank", () => {
+        assert.equal(getModuleSpecifier("util", "a/b"), "../../util");
+    });
+
+    it("getModuleSpecifier: root is not blank", () => {
+        assert.equal(getModuleSpecifier("util", "a/b", ".."), "../../../util");
     });
 
 });

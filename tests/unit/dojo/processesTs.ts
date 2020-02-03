@@ -170,4 +170,41 @@ describe('dojo/processesTs', () => {
         assert.equal(processesSource, expectedSource);
     });
 
+    it('create: groupPath is not blank', () => {
+        assert.isTrue(create(project, [{
+            pageInfo: {
+                id: 1,
+                key: 'page1',
+                groupPath: 'a/b'
+            },
+            widgets: [],
+            data: [{
+                id: "1",
+                parentId: "-1",
+                name: "$",
+                type: "Object"
+            }, {
+                id: "2",
+                parentId: "1",
+                name: "num",
+                type: "Number",
+                value: "1"
+            }]
+        }]));
+
+        const processesSource = project.getSourceFileOrThrow("src/processes/a/b/page1Processes.ts").getFullText();
+        const expectedSource = 
+            `import { commandFactory } from "../../utils";\n` +
+            `import { add } from "@dojo/framework/stores/state/operations";\n` +
+            `import { createProcess } from "@dojo/framework/stores/process";\n\n` +
+            `const initDataCommand = commandFactory(({ path }) => {\n` +
+            `    const pageData = {\n` +
+            `        num: 1\n` +
+            `    };\n` +
+            `    return [add(path("page1"), pageData)];\n` + 
+            `});\n` +
+            `export const initDataProcess = createProcess("init-data-process", [initDataCommand]);\n`;
+
+        assert.equal(processesSource, expectedSource);
+    });
 });

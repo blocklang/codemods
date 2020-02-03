@@ -6,7 +6,7 @@ import {camelCase, upperFirst} from 'lodash';
 import { renderPage } from './pageRender';
 import { getWidgetImports } from './pageImports';
 import { ENCODING_UTF8 } from '../util';
-import { getPagePath } from './pageUtil';
+import { getPagePath, getModuleSpecifier } from './pageUtil';
 import * as logger from '../logger';
 import { declareVariables, initPageData } from './pageData';
 
@@ -102,8 +102,9 @@ function createPage(project: Project, dependences: Dependency[], pageTemplate: s
 	if(hasDefinePageData) {
 		// import store from '../store';
 		// import { initDataProcess } from '../processes/mainProcesses';
-		sourceFile.addImportDeclaration({moduleSpecifier: "../store", defaultImport: "store"});
-		sourceFile.addImportDeclaration({moduleSpecifier: `../processes/${camelCase(pageModel.pageInfo.key)}Processes`, namedImports: ["initDataProcess"]})
+		const groupPath = pageModel.pageInfo.groupPath;
+		sourceFile.addImportDeclaration({moduleSpecifier: getModuleSpecifier("store", groupPath, ".."), defaultImport: "store"});
+		sourceFile.addImportDeclaration({moduleSpecifier: getModuleSpecifier(`processes/${camelCase(pageModel.pageInfo.key)}Processes`,groupPath, ".."), namedImports: ["initDataProcess"]})
 	
 		// export default factory(function Main({ properties, middleware: { store } }) {
 		// 添加 store middleware

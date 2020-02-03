@@ -225,6 +225,67 @@ export default factory(function Main({ properties, middleware: { store } }) {
         assert.equal(actual, expected);
     });
 
-    // 测试相对路径，即 groupPath is not blank
+    it('create: source in src/pages/main/index.ts, define one widget and two data item and groupPath is not blank', () => {
+        const pageModels: PageModel[] = [{
+            pageInfo: {
+                id: 1,
+                key: 'main',
+                groupPath: 'a/b'
+            },
+            widgets: [{
+				id: '1',
+				parentId: '-1',
+				apiRepoId: 1,
+				widgetName: 'WidgetA',
+				canHasChildren: true,
+				properties: [
+					{
+						id: '1',
+						name: 'propA',
+						valueType: 'string',
+						value: '2',
+						isExpr: true
+					}
+				]
+			}],
+            data: [{
+                id: "1",
+                parentId: "-1",
+                name: "$",
+                type: "Object"
+            }, {
+                id: "2",
+                parentId: "1",
+                name: "str",
+                type: "String",
+                value: "a"
+            }]
+        }];
+        assert.isTrue(create(project, [], pageModels));
+        const actual = project.getSourceFileOrThrow("src/pages/a/b/main/index.ts").getText();
+        const expected = `import { v, w, create } from '@dojo/framework/core/vdom';
+import store from "../../../store";
+import { initDataProcess } from "../../../processes/mainProcesses";
 
+export interface MainProperties { }
+
+const factory = create({ store }).properties<MainProperties>();
+
+export default factory(function Main({ properties, middleware: { store } }) {
+    const { } = properties();
+    const { get, path, executor } = store;
+
+    const pageData = get(path("aBMain"));
+    if (!pageData) {
+        executor(initDataProcess)({});
+    }
+    const str = get(path("aBMain", "str"));
+
+    return v('div', {}, [
+        w(WidgetA, { key: "1", propA: str }, [])
+    ]);
+});
+`
+        assert.equal(actual, expected);
+    });
 });
