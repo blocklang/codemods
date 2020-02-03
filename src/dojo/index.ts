@@ -8,6 +8,7 @@ import * as routesTs from './routesTs';
 import * as pageTs from './pageTs';
 import * as interfaceDTs from './interfacesDTs';
 import * as processesTs from './processesTs';
+import * as routeProcessesTs from './routeProcessesTs';
 import * as appTs from './appTs';
 
 import * as logger from '../logger';
@@ -58,6 +59,11 @@ export function generate(modelDir: string = ''): void {
 	}
 
 	if(processesTs.create(project, pageModels)) {
+		process.exit(1);
+		return;
+	}
+
+	if(routeProcessesTs.update(project, pageModels)) {
 		process.exit(1);
 		return;
 	}

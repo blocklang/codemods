@@ -1,5 +1,5 @@
 import { PageModel, PageInfo } from '../interfaces';
-import { Project, CallExpression, ts, ArrayLiteralExpression, Node, FunctionExpression } from 'ts-morph';
+import { Project, CallExpression, ArrayLiteralExpression, Node, FunctionExpression, SyntaxKind } from 'ts-morph';
 import { kebabCase, camelCase, upperFirst } from 'lodash';
 import { join } from 'path';
 import { getPageGroupPathes } from './pageUtil';
@@ -52,7 +52,7 @@ export function update(project: Project, pageModels: PageModel[]): boolean {
         logger.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，但没有找到函数体。`);
         return false;
     }
-    const returnStatement = functionBody.getLastChildByKind(ts.SyntaxKind.ReturnStatement);
+    const returnStatement = functionBody.getLastChildByKind(SyntaxKind.ReturnStatement);
     if (!returnStatement) {
         logger.error(`在 ${appTsFileName} 的 factory 函数的第一个输入参数，是一个函数，在函数体中没有找到返回语句。`);
         return false;
