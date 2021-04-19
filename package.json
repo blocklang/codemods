@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@dojo/framework": "^6.0.4",
-    "@types/cross-spawn": "^6.0.1",
+    "@types/cross-spawn": "6.0.2",
     "@types/jsdom": "^16.2.0",
     "@types/lodash": "^4.14.149",
     "@types/stringify-object": "^3.2.0",
