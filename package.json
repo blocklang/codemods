@@ -42,7 +42,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@dojo/framework": "^6.0.4",
+    "@dojo/framework": "6.0.6",
     "@types/cross-spawn": "^6.0.1",
     "@types/jsdom": "^16.2.0",
     "@types/lodash": "^4.14.149",
