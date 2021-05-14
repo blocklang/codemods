@@ -51,7 +51,7 @@
     "cross-spawn": "^7.0.1",
     "jsdom": "^16.2.2",
     "lodash": "^4.17.15",
-    "pkg-dir": "^4.2.0",
+    "pkg-dir": "5.0.0",
     "stringify-object": "^3.3.0",
     "ts-morph": "^7.0.1",
     "yargs": "^15.3.1"
