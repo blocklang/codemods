@@ -53,7 +53,7 @@
     "lodash": "^4.17.15",
     "pkg-dir": "^4.2.0",
     "stringify-object": "^3.3.0",
-    "ts-morph": "^7.0.1",
+    "ts-morph": "10.1.0",
     "yargs": "^15.3.1"
   },
   "husky": {
