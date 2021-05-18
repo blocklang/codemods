@@ -47,7 +47,7 @@
     "@types/jsdom": "^16.2.0",
     "@types/lodash": "^4.14.149",
     "@types/stringify-object": "^3.2.0",
-    "@types/yargs": "^15.0.4",
+    "@types/yargs": "16.0.2",
     "cross-spawn": "^7.0.1",
     "jsdom": "^16.2.2",
     "lodash": "^4.17.15",
