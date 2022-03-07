@@ -34,7 +34,7 @@
     "@types/prettier": "^1.19.1",
     "codecov": "^3.6.5",
     "husky": "^4.2.3",
-    "intern": "^4.8.1",
+    "intern": "4.10.1",
     "lint-staged": "^10.1.1",
     "shx": "^0.3.2",
     "sinon": "^9.0.1",
